@@ -1,5 +1,6 @@
 let unitLength = 0;
 const NUM_BUTTONS_PER_ROW = 4;
+const NUMBER_COLOR = "gray";
 const OPERATION_COLOR = "sandybrown";
 const EQUALS_COLOR = "lightseagreen";
 
@@ -19,18 +20,18 @@ function operate(operand1, operand, operand2) {
     }
 }
 
-function customizeButton(button, width, backgroundColor, textContent) {
+function customizeButton(button, width, backgroundColor, textContent, id) {
     button.style.width = width * unitLength + "px";
     button.style.height = unitLength / 2 + "px";
     button.style.backgroundColor = backgroundColor;
     button.textContent = textContent;
+    button.id = id;
 }
 
 function main() {
     const calculator = document.querySelector(".calculator");
     const usableWidth = calculator.clientWidth - calculator.style.paddingLeft
     - calculator.style.paddingRight;
-    const NUM_BUTTONS_PER_ROW = 4;
     const gap = calculator.style.gap;
     unitLength = (usableWidth - (NUM_BUTTONS_PER_ROW - 1) * gap)
     / NUM_BUTTONS_PER_ROW;
@@ -38,33 +39,24 @@ function main() {
     const numberButtons = [];
     for (let i = 0; i <= 9; i++) {
         const button = document.createElement("button");
-        button.setAttribute("id", "button" + i);
         numberButtons.push(i);
     }
 
     const buttonAdd = document.createElement("button");
-    buttonAdd.setAttribute("id", "buttonAdd");
 
     const buttonSubtract = document.createElement("button");
-    buttonSubtract.setAttribute("id", "buttonSubtract");
 
     const buttonMultiply = document.createElement("button");
-    buttonMultiply.setAttribute("id", "buttonMultiply");
 
     const buttonDivide = document.createElement("button");
-    buttonDivide.setAttribute("id", "buttonDivide");
 
     const buttonEquals = document.createElement("button");
-    buttonEquals.setAttribute("id", "buttonEquals");
 
     const buttonDecimal = document.createElement("button");
-    buttonDecimal.setAttribute("id", "buttonDecimal");
 
     const buttonAC = document.createElement("button");
-    buttonAC.setAttribute("id", "buttonAC");
 
     const buttonNegate = document.createElement("button");
-    buttonNegate.setAttribute("id", "buttonNegate");
 
     const operations = document.querySelector(".operations");
     const operationButtons = [buttonDivide, buttonMultiply, buttonSubtract,
@@ -72,15 +64,15 @@ function main() {
     ];
     for (let button of operationButtons) {
         if (button === buttonDivide) {
-            customizeButton(button, 1, OPERATION_COLOR, "/");
+            customizeButton(button, 1, OPERATION_COLOR, "/", "buttonDivide");
         } else if (button === buttonMultiply) {
-            customizeButton(button, 1, OPERATION_COLOR, "*");
+            customizeButton(button, 1, OPERATION_COLOR, "*", "buttonMultiply");
         } else if (button === buttonSubtract) {
-            customizeButton(button, 1, OPERATION_COLOR, "-");
+            customizeButton(button, 1, OPERATION_COLOR, "-", "buttonSubtract");
         } else if (button === buttonAdd) {
-            customizeButton(button, 1, OPERATION_COLOR, "+");
+            customizeButton(button, 1, OPERATION_COLOR, "+", "buttonAdd");
         } else {
-            customizeButton(button, 1, EQUALS_COLOR, "=");
+            customizeButton(button, 1, EQUALS_COLOR, "=", "buttonEquals");
         }
         operations.appendChild(button);
     }
