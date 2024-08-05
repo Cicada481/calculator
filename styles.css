@@ -16,6 +16,10 @@ button:hover {
     cursor: pointer;
 }
 
+button {
+  font-size: inherit;
+}
+
 img, picture, video, canvas, svg {
     min-height: 0;
     min-width: 0;
@@ -31,25 +35,30 @@ body {
     justify-content: center;
     align-items: center;
 
-    font-family: Arial, Helvetica, sans-serif;
-
     .calculator {
         display: flex;
         flex-direction: column;
-        background: lightgray;
+        background: black;
     
         width: 500px;
-        padding: 15px;
-        gap: 10px;
+        padding: 5px;
+        
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 30px;
+        
+        .display {
+          background: lightskyblue;
+          border-bottom: 1px solid black;
+          text-align: right;
+        }
 
         .buttons {
             display: flex;
-            gap: 10px;
+            justify-content: flex-start;
 
             .operations, .numbers {
                 display: flex;
                 flex-direction: column;
-                gap: 10px;
             }
         }
     }
