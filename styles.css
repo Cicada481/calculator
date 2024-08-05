@@ -1,0 +1,56 @@
+/* Beginning of CSS Reset */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+img, picture, video, canvas, svg {
+    min-height: 0;
+    min-width: 0;
+    max-width: 100%;
+    object-fit: cover;
+}
+
+/* End of CSS Reset */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    .calculator {
+        display: flex;
+        flex-direction: column;
+        background: lightgray;
+    
+        width: 500px;
+        padding: 10px;
+        gap: 10px;
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+
+            .operations, .numbers {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    }
+}
