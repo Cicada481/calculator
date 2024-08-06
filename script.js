@@ -8,6 +8,7 @@ const DIVISION_BY_ZERO_MESSAGE = "stop";
 const BUTTON_BORDER_RADIUS = 2;
 const DISPLAY_LIMIT = 23;
 const DECIMAL_PRECISION = 5;
+const BUTTON_HOVER_OPACITY = 0.9;
 
 function operate(operand1, operand, operand2) {
     let result = "";
@@ -29,7 +30,7 @@ function operate(operand1, operand, operand2) {
             break;
     }
     if (!Number.isInteger(result)) {
-        result = result.toFixed(DECIMAL_PRECISION);
+        result = parseFloat(result.toFixed(DECIMAL_PRECISION));
     }
     return result.toString();
 }
@@ -43,29 +44,33 @@ function customizeButton(button, width, backgroundColor, textContent, id) {
     button.style.borderRadius = BUTTON_BORDER_RADIUS + "px";
     
     button.addEventListener("mouseenter", e => {
-      e.currentTarget.style.opacity = "0.9";
+        e.currentTarget.style.opacity = BUTTON_HOVER_OPACITY.toString();
     });
     
     button.addEventListener("mouseleave", e => {
-      e.currentTarget.style.opacity = "1";
+        e.currentTarget.style.opacity = "1";
     });
-}
+} // customizeButton()
 
 function addRow(numberButtonContainer, newRow, buttonList) {
-  newRow.style.display = "flex";
-  newRow.style.gap = GAP + "px";
-  buttonList.forEach(button => newRow.appendChild(button));
-  numberButtonContainer.appendChild(newRow);
+    newRow.style.display = "flex";
+    newRow.style.gap = GAP + "px";
+    buttonList.forEach(button => newRow.appendChild(button));
+    numberButtonContainer.appendChild(newRow);
 }
 
 function displayResult(divDisplay, valueString) {
-    let stringDisplay = valueString;
-    let valueNumber = +valueString;
-    if (!isNaN(valueNumber) && !Number.isInteger(valueNumber)) {
-        stringDisplay = valueNumber.toFixed(DECIMAL_PRECISION);
+    if (valueString === "") {
+        divDisplay.textContent = "0";
+    } else {
+        divDisplay.textContent = valueString.substring(0, DISPLAY_LIMIT);
     }
-    divDisplay.textContent = stringDisplay.substring(0, DISPLAY_LIMIT);
-}
+    console.log("original: " + valueString);
+} // displayResult()
+
+function negateValueString(valueString) {
+  return (-(+valueString)).toString();
+} // negateValueString()
 
 function main() {
     const calculator = document.querySelector(".calculator");
@@ -73,7 +78,7 @@ function main() {
     const leftPadding = getComputedStyle(calculator)
     .getPropertyValue("padding-left");
     const usableWidth = calculator.clientWidth -
-    2 * leftPadding.substring(0, leftPadding.length - 2);
+    2 * parseInt(leftPadding);
     unitLength = (usableWidth - (NUM_BUTTONS_PER_ROW - 1) * GAP)
     / NUM_BUTTONS_PER_ROW;
     const buttons = document.querySelector(".buttons");
@@ -151,7 +156,6 @@ function main() {
     let hasOperator = false;
 
     let divDisplay = document.querySelector(".display");
-    displayResult(divDisplay, storedValue);
     
     buttonEquals.addEventListener("click", () => {
         if (!hasOperator) {
@@ -162,6 +166,7 @@ function main() {
             storedValue = operate(storedValue, operator, currentValue);
             
             displayResult(divDisplay, storedValue);
+            console.log("equals");
 
             if (storedValue === DIVISION_BY_ZERO_MESSAGE) {
                 storedValue = "0";
@@ -173,16 +178,16 @@ function main() {
         hasOperator = false;
     });
 
-    let equalsEvent = new MouseEvent("click");
     for (let button of operationButtons) {
         if (button !== buttonEquals) {
             button.addEventListener("click", e => {
-                buttonEquals.dispatchEvent(equalsEvent);
+                buttonEquals.dispatchEvent(new Event("click"));
                 operator = e.currentTarget.id;
                 hasOperator = true;
             });
         }
     }
+    
     for (let i = 0; i <= 9; i++) {
         numberButtons[i].addEventListener("click", e => {
             if (!(i === 0 && currentValue === "0")) {
@@ -192,11 +197,76 @@ function main() {
                     currentValue += i;
                 }
                 displayResult(divDisplay, currentValue);
+                console.log("append digit")
             }
         });
     }
-
-
-}
+    
+    buttonDecimal.addEventListener("click", e => {
+      if (!hasDecimal) {
+        if (currentValue === "") {
+          currentValue = "0";
+        }
+        currentValue += ".";
+        hasDecimal = true;
+        displayResult(divDisplay, currentValue);
+      }
+    });
+    
+    buttonNegate.addEventListener("click", e => {
+      if (currentValue === "") {
+        storedValue = negateValueString(storedValue);
+        displayResult(divDisplay, storedValue);
+        console.log("negate");
+      } else {
+        currentValue = negateValueString(currentValue);
+        displayResult(divDisplay, currentValue);
+        console.log("negate current");
+      }
+    })
+    
+    buttonAC.addEventListener("click", e => {
+      storedValue = "0";
+      operator = "";
+      currentValue = "";
+      hasDecimal = false;
+      hasOperator = false;
+      displayResult(divDisplay, storedValue);
+      console.log("display AC");
+    })
+    
+    document.addEventListener("keydown", e => {
+      if (!isNaN(+e.key)) {
+        let num = +e.key;
+        numberButtons[num].dispatchEvent(new Event("click"));
+      } else if (e.key === "+") {
+        buttonAdd.dispatchEvent(new Event("click"));
+      } else if (e.key === "-") {
+        buttonSubtract.dispatchEvent(new Event("click"));
+      } else if (e.key === "*") {
+        buttonMultiply.dispatchEvent(new Event("click"));
+      } else if (e.key === "/") {
+        buttonDivide.dispatchEvent(new Event("click"));
+      } else if (e.key === "=") {
+        buttonEquals.dispatchEvent(new Event("click"));
+      } else if (e.key === ".") {
+        buttonDecimal.dispatchEvent(new Event("click"));
+      } else if (e.key === "Backspace"){
+        console.log("currentValue is " + currentValue);
+        if (currentValue === "") {
+          buttonAC.dispatchEvent(new Event("click"));
+        } else {
+          let lastChar = currentValue.at(-1);
+          currentValue = currentValue.substring(0, currentValue.length - 1);
+          if (lastChar === ".") {
+            hasDecimal = false;
+          }
+          displayResult(divDisplay, currentValue);
+        }
+      }
+    })
+    
+    displayResult(divDisplay, storedValue);
+} // main()
 
 main();
