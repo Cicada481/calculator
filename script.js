@@ -33,7 +33,7 @@ function operate(operand1, operand, operand2) {
         result = parseFloat(result.toFixed(DECIMAL_PRECISION));
     }
     return result.toString();
-}
+} // operate()
 
 function customizeButton(button, width, backgroundColor, textContent, id) {
     button.style.width = width * unitLength + GAP * (width - 1) + "px";
@@ -57,7 +57,7 @@ function addRow(numberButtonContainer, newRow, buttonList) {
     newRow.style.gap = GAP + "px";
     buttonList.forEach(button => newRow.appendChild(button));
     numberButtonContainer.appendChild(newRow);
-}
+} // addRow()
 
 function displayResult(divDisplay, valueString) {
     if (valueString === "") {
@@ -65,7 +65,6 @@ function displayResult(divDisplay, valueString) {
     } else {
         divDisplay.textContent = valueString.substring(0, DISPLAY_LIMIT);
     }
-    console.log("original: " + valueString);
 } // displayResult()
 
 function negateValueString(valueString) {
@@ -166,7 +165,6 @@ function main() {
             storedValue = operate(storedValue, operator, currentValue);
             
             displayResult(divDisplay, storedValue);
-            console.log("equals");
 
             if (storedValue === DIVISION_BY_ZERO_MESSAGE) {
                 storedValue = "0";
@@ -197,7 +195,6 @@ function main() {
                     currentValue += i;
                 }
                 displayResult(divDisplay, currentValue);
-                console.log("append digit")
             }
         });
     }
@@ -217,11 +214,9 @@ function main() {
       if (currentValue === "") {
         storedValue = negateValueString(storedValue);
         displayResult(divDisplay, storedValue);
-        console.log("negate");
       } else {
         currentValue = negateValueString(currentValue);
         displayResult(divDisplay, currentValue);
-        console.log("negate current");
       }
     })
     
@@ -232,7 +227,6 @@ function main() {
       hasDecimal = false;
       hasOperator = false;
       displayResult(divDisplay, storedValue);
-      console.log("display AC");
     })
     
     document.addEventListener("keydown", e => {
@@ -252,7 +246,6 @@ function main() {
       } else if (e.key === ".") {
         buttonDecimal.dispatchEvent(new Event("click"));
       } else if (e.key === "Backspace"){
-        console.log("currentValue is " + currentValue);
         if (currentValue === "") {
           buttonAC.dispatchEvent(new Event("click"));
         } else {
