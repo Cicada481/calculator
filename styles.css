@@ -49,7 +49,10 @@ body {
         .display {
           background: lightskyblue;
           border-bottom: 1px solid black;
+
           text-align: right;
+          font-size: 36px;
+          padding: 5px;
         }
 
         .buttons {

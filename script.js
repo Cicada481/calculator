@@ -4,21 +4,34 @@ const NUM_BUTTONS_PER_ROW = 4;
 const NUMBER_COLOR = "lightgray";
 const OPERATION_COLOR = "sandybrown";
 const EQUALS_COLOR = "lightseagreen";
+const DIVISION_BY_ZERO_MESSAGE = "stop";
+const BUTTON_BORDER_RADIUS = 2;
+const DISPLAY_LIMIT = 23;
+const DECIMAL_PRECISION = 5;
 
 function operate(operand1, operand, operand2) {
+    let result = "";
     switch (operand) {
         case "buttonAdd":
-            return operand1 + operand2;
+            result = +operand1 + +operand2;
+            break;
         case "buttonSubtract":
-            return operand1 - operand2;
+            result = operand1 - operand2;
+            break;
         case "buttonMultiply":
-            return operand1 * operand2;
+            result = operand1 * operand2;
+            break;
         case "buttonDivide":
-            if (operand2 == 0) {
-                return null; // divide by zero error
+            if (+operand2 === 0) {
+                return DIVISION_BY_ZERO_MESSAGE;
             }
-            return operand1 / operand2;
+            result = operand1 / operand2;
+            break;
     }
+    if (!Number.isInteger(result)) {
+        result = result.toFixed(DECIMAL_PRECISION);
+    }
+    return result.toString();
 }
 
 function customizeButton(button, width, backgroundColor, textContent, id) {
@@ -27,7 +40,7 @@ function customizeButton(button, width, backgroundColor, textContent, id) {
     button.style.backgroundColor = backgroundColor;
     button.textContent = textContent;
     button.id = id;
-    button.style.borderRadius = BORDER_RADIUS + "px";
+    button.style.borderRadius = BUTTON_BORDER_RADIUS + "px";
     
     button.addEventListener("mouseenter", e => {
       e.currentTarget.style.opacity = "0.9";
@@ -45,10 +58,20 @@ function addRow(numberButtonContainer, newRow, buttonList) {
   numberButtonContainer.appendChild(newRow);
 }
 
+function displayResult(divDisplay, valueString) {
+    let stringDisplay = valueString;
+    let valueNumber = +valueString;
+    if (!isNaN(valueNumber) && !Number.isInteger(valueNumber)) {
+        stringDisplay = valueNumber.toFixed(DECIMAL_PRECISION);
+    }
+    divDisplay.textContent = stringDisplay.substring(0, DISPLAY_LIMIT);
+}
+
 function main() {
     const calculator = document.querySelector(".calculator");
     calculator.style.gap = GAP + "px";
-    const leftPadding = getComputedStyle(calculator).getPropertyValue("padding-left");
+    const leftPadding = getComputedStyle(calculator)
+    .getPropertyValue("padding-left");
     const usableWidth = calculator.clientWidth -
     2 * leftPadding.substring(0, leftPadding.length - 2);
     unitLength = (usableWidth - (NUM_BUTTONS_PER_ROW - 1) * GAP)
@@ -103,31 +126,77 @@ function main() {
     
     customizeButton(buttonAC, 1, NUMBER_COLOR, "AC", "buttonAC");
     customizeButton(buttonNegate, 2, NUMBER_COLOR, "+/-", "buttonNegate");
-    addRow(numberButtonContainer, document.createElement("div"), [buttonAC, buttonNegate]);
+    addRow(numberButtonContainer, document.createElement("div"), [buttonAC,
+        buttonNegate]);
     
     for (let i = 7; i >= 1; i -= 3) {
       const buttonList = [];
       for (let j = 0; j < 3; j++) {
         let num = i + j;
-        customizeButton(numberButtons[num], 1, NUMBER_COLOR, num.toString(), "button" + num);
+        customizeButton(numberButtons[num], 1, NUMBER_COLOR, num.toString(),
+        "button" + num);
         buttonList.push(numberButtons[num]);
       }
       addRow(numberButtonContainer, document.createElement("div"), buttonList);
     }
     customizeButton(numberButtons[0], 2, NUMBER_COLOR, "0", "button0");
     customizeButton(buttonDecimal, 1, NUMBER_COLOR, ".", "buttonDecimal");
-    addRow(numberButtonContainer, document.createElement("div"), [numberButtons[0], buttonDecimal]);
+    addRow(numberButtonContainer, document.createElement("div"),
+    [numberButtons[0], buttonDecimal]);
     
-    let operand1 = 0;
+    let storedValue = "0";
     let operator = "";
-    let operand2 = "";
-    
-    for (let i = 0; i <= 9; i++) {
-      numberButtons[i].addEventListener();
-    }
-    
-}
+    let currentValue = "";
+    let hasDecimal = false;
+    let hasOperator = false;
 
-const BORDER_RADIUS = 2;
+    let divDisplay = document.querySelector(".display");
+    displayResult(divDisplay, storedValue);
+    
+    buttonEquals.addEventListener("click", () => {
+        if (!hasOperator) {
+            if (currentValue !== "") {
+                storedValue = currentValue;
+            }
+        } else if (currentValue !== "") {
+            storedValue = operate(storedValue, operator, currentValue);
+            
+            displayResult(divDisplay, storedValue);
+
+            if (storedValue === DIVISION_BY_ZERO_MESSAGE) {
+                storedValue = "0";
+            }
+        }
+        operator = "";
+        currentValue = "";
+        hasDecimal = false;
+        hasOperator = false;
+    });
+
+    let equalsEvent = new MouseEvent("click");
+    for (let button of operationButtons) {
+        if (button !== buttonEquals) {
+            button.addEventListener("click", e => {
+                buttonEquals.dispatchEvent(equalsEvent);
+                operator = e.currentTarget.id;
+                hasOperator = true;
+            });
+        }
+    }
+    for (let i = 0; i <= 9; i++) {
+        numberButtons[i].addEventListener("click", e => {
+            if (!(i === 0 && currentValue === "0")) {
+                if (currentValue === "0") {
+                    currentValue = i.toString();
+                } else {
+                    currentValue += i;
+                }
+                displayResult(divDisplay, currentValue);
+            }
+        });
+    }
+
+
+}
 
 main();
