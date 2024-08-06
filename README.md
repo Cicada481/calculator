@@ -10,4 +10,4 @@ The calculator has keyboard support for the numbers, four main operations, backs
 
 Backspace can delete digits one at a time.
 
-The calculator can also be cleared typing backspace directly after any equals sign.
+The calculator can also be cleared by typing backspace directly after any equals sign.
