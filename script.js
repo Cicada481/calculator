@@ -68,7 +68,14 @@ function displayResult(divDisplay, valueString) {
 } // displayResult()
 
 function negateValueString(valueString) {
-  return (-(+valueString)).toString();
+    if (valueString === "") {
+        return valueString;
+    }
+    let firstChar = valueString.at(0);
+    if (firstChar === "-") {
+        return valueString.substring(1);
+    }
+    return "-" + valueString;
 } // negateValueString()
 
 function main() {
@@ -251,6 +258,9 @@ function main() {
         } else {
           let lastChar = currentValue.at(-1);
           currentValue = currentValue.substring(0, currentValue.length - 1);
+          if (currentValue === "-") {
+            currentValue = "";
+          }
           if (lastChar === ".") {
             hasDecimal = false;
           }
