@@ -27,6 +27,10 @@ img, picture, video, canvas, svg {
     object-fit: cover;
 }
 
+table {
+    border-collapse: collapse;
+}
+
 /* End of CSS Reset */
 
 body {
